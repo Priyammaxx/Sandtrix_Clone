@@ -1,5 +1,5 @@
 # About
-A clone of the original game [SANDTRIX](http://sandtrix.net/) made in python. All the logic is original except the following the basics of block spawning from a tetris tutorial. The game is still incomplete as of now.
+A clone made in python of the original game [SANDTRIX](http://sandtrix.net/). All the logic is original except following the basics of block spawning from a tetris tutorial. The game is still incomplete as of now.
 
 # Requirements
 - pygame
@@ -17,3 +17,4 @@ A clone of the original game [SANDTRIX](http://sandtrix.net/) made in python. Al
 - [ ] Game Start screen wtih title and art
 - [ ] Game special effects
 - [ ] Some power ups
+

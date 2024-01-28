@@ -64,6 +64,3 @@ class Tetramino:
                         self.block.cell_size,
                         self.block.cell_size)
                     pygame.draw.rect(screen, self.block.block_color[IX(i,j,self.block.block_side)], square)
-
-        
-

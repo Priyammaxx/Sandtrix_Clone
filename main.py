@@ -53,6 +53,10 @@ while True:
             game.move_down()
             WIN.fill('black')
             game.draw_sand(WIN)
+
+    if game.game_over == True:
+        print("GAME OVER")
+
             
     score_value_surface = title_font.render(str(game.points), True, (0,0,0))
 

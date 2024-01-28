@@ -24,12 +24,18 @@ class Game:
         self.points = 0
         self.clears = 0
 
+    # check for any clears on sand grid and there is a clear delete sand from those cells
     def check_clears(self):
         for y in self.color_on_left():
             path = Path(self.sand.cell_color_name, y, self.sand.grid)
-            if path.find_path() == True:
+            is_found = path.find_path()
+            if is_found == True:
+                print("PATH FOUND")
+                print(path.points_visited)
                 self.clears += 1
-                self.clear_cells(path)
+                self.sand.cell_color_name, self.sand.grid, self.points = path.delete_cells()
+                print(self.clears)
+
 
     def clear_cells(self,path):
         self.sand.cell_color_name, self.sand.grid, self.points = path.delete_cells()
@@ -52,19 +58,20 @@ class Game:
             self.is_inside = True
         if self.is_colliding:
             self.current_tetramino.move(-2,0)
-            self.tetramino_to_sand
+            self.tetramino_to_sand()
 
     def move_down(self):
         self.current_tetramino.move(0,2)
         self.check()
         if self.is_colliding:
-            self.current_tetramino.move(0,-2)
-            # if is_game_over()
-            self.tetramino_to_sand()
+            if self.current_tetramino.get_absolute_position()[0].y < 1:
+                self.game_over = True
+
+            else:
+                self.current_tetramino.move(0,-2)
+                self.tetramino_to_sand()
     
-    def is_game_over(self):
-        return None
-    # incomplete function
+
     
     def rotate(self):
         self.current_tetramino.rotate()
@@ -92,15 +99,15 @@ class Game:
                     self.sand.cell_color_name[IX(i + point.x, j + point.y)] = self.current_tetramino.color_code
         self.current_tetramino = self.next_tetramino
         self.next_tetramino = self.get_random_tetramino()
-        self.is_colliding = False   # reseets value
+        self.is_colliding = False   # resets value
     
 
     def get_random_tetramino(self):
         if len(self.tetramino_list) == 0:
             self.tetramino_list = [LBlock(), JBlock(), IBlock(), OBlock(), SBlock(), ZBlock(), TBlock()]
         tetramino = random.choice(self.tetramino_list)
-        tetramino.rotation_state = random.choice([0,1,2,3])
         self.tetramino_list.remove(tetramino)
+        tetramino.rotation_state = random.choice([0,1,2,3])
         color = random.choice(["Blue", "Red", "Yellow", "Green"])
         tetramino.give_color(color)
         tetramino.color_code = color
@@ -109,20 +116,24 @@ class Game:
         return tetramino
     
 
-    # keep track of every next new color y-position on left side of wall
+    # keep track of y-position of every next new color on left side of wall
     def color_on_left(self):
-        current_color = self.sand.return_cell_color(0,143)
+        current_color = 0
+        if self.sand.return_cell_color(0,143) != (0,0,0):
+            current_color = self.sand.return_cell_color(0,143)
         y_positions = []
         for j in range(143, 0,-1):
             if current_color != self.sand.return_cell_color(0,j):
                 y_positions.append(j)
-                current_color = self.sand.return_cell_color(0,j)
+                if self.sand.return_cell_color(0,j) != (0,0,0):
+                    current_color = self.sand.return_cell_color(0,j)
         return y_positions
+    
     
     def draw_tetramino(self, screen):
         self.current_tetramino.draw(screen)
 
     def draw_sand(self,screen):
-        # self.check_clears()
         self.sand.sand_update()
         self.sand.draw(screen)
+        self.check_clears()

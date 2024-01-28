@@ -1,7 +1,7 @@
 # from sand import IX
 
 def IX(x,y):
-    return x + y * 80 
+    return x + y * 80
 
 class Path:
     def __init__(self, grid, initial_y, sand_grid):
@@ -12,8 +12,10 @@ class Path:
         self.x = 0
         self.val = self.grid[IX(0,self.y)]
         self.backtrack_point = ()
-        self.points_visited = []
+        self.points_visited = [(self.x, self.y)]
         self.backtrack_move = '' # move on which backtrak created
+        self.y_max = 144
+        self.x_max = 80
 
     def find_path(self):
         found = False
@@ -55,7 +57,7 @@ class Path:
             elif last_moved == 'DOWN':
                 if self.left() == True:
                     last_moved = 'LEFT'
-                elif self.down() == True and self.y < 143:
+                elif self.down() == True:
                     last_moved = 'DOWN'
                 elif self.right() == True:
                     last_moved = 'RIGHT'
@@ -72,7 +74,7 @@ class Path:
                     last_moved = 'UP'
                 elif self.left() == True:
                     last_moved = 'LEFT'
-                elif self.down() == True and self.y < 143:
+                elif self.down() == True:
                     last_moved = 'DOWN'
                 elif self.backtrack_point:
                     self.x = self.backtrack_point[0]
@@ -82,10 +84,12 @@ class Path:
                 else:
                     run = False
             
-            self.points_visited.append((self.x,self.y))
+            if (self.x,self.y) not in self.points_visited:
+                self.points_visited.append((self.x,self.y))
 
-            if self.x == 79:
+            if self.x == self.x_max - 1:
                 found = True
+                # run = False # need to remove this later
             if self.x == 0 and self.y == self.initial_y:
                 run = False
         return found
@@ -94,42 +98,46 @@ class Path:
         if self.y < 1:
             return False
         if self.grid[IX(self.x,self.y-1)] == self.val:
-            if self.grid[IX(self.x-1,self.y+1)] != self.val:
-                self.backtrack_point = (self.x,self.y)
-                self.backtrack_move = 'UP'
+            if self.x > 0 and self.y < self.y_max-1:
+                if self.grid[IX(self.x-1,self.y-1)] != self.val and self.grid[IX(self.x+1,self.y-1)] != self.val:
+                    self.backtrack_point = (self.x,self.y)
+                    self.backtrack_move = 'UP'
             self.y -= 1
             return True
         return False
 
     def down(self):
-        if self.y >= 143 :
+        if self.y == self.y_max - 1 :
             return False
         if self.grid[IX(self.x,self.y+1)] == self.val:
-            if self.grid[IX(self.x+1,self.y+1)] != self.val:
-                self.backtrack_point = (self.x,self.y)
-                self.backtrack_move = 'DOWN'
+            if self.x < self.x_max-1 and self.y < self.y_max-1:
+                if self.grid[IX(self.x+1,self.y+1)] != self.val and self.grid[IX(self.x-1,self.y+1)] != self.val:
+                    self.backtrack_point = (self.x,self.y)
+                    self.backtrack_move = 'DOWN'
             self.y += 1
             return True
         return False
 
     def right(self):
-        if self.x >= 79:
+        if self.x == self.x_max - 1:
             return False
         if self.grid[IX(self.x+1,self.y)] == self.val:
-            if self.grid[IX(self.x+1,self.y-1)] != self.val:
-                self.backtrack_point = (self.x,self.y)
-                self.backtrack_move = 'RIGHT'
+            if self.x < self.x_max-1 and self.y > 0:
+                if self.grid[IX(self.x+1,self.y-1)] != self.val and (self.y == self.y_max - 1 or self.grid[IX(self.x+1,self.y+1)] != self.val):
+                    self.backtrack_point = (self.x,self.y)
+                    self.backtrack_move = 'RIGHT'
             self.x += 1
             return True
         return False
         
     def left(self):
-        if self.x <= 0:
+        if self.x < 1:
             return False
         if self.grid[IX(self.x-1,self.y)] == self.val:
-            if self.grid[IX(self.x-1,self.y+1)] != self.val:
-                self.backtrack_point = (self.x,self.y)
-                self.backtrack_move = 'LEFT'
+            if self.x > 0 and self.y < self.y_max-1:
+                if self.grid[IX(self.x-1,self.y+1)] != self.val and (self.y == self.y_max - 1 or self.grid[IX(self.x-1,self.y-1)] != self.val):
+                    self.backtrack_point = (self.x,self.y)
+                    self.backtrack_move = 'LEFT'
             self.x -= 1
             return True
         return False
